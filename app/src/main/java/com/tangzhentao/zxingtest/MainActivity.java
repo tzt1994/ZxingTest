@@ -10,12 +10,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.zxing.client.android.CaptureActivity;
-import com.google.zxing.client.android.Intents;
+import com.tzt.zxinglib.android.CaptureActivity;
+import com.tzt.zxinglib.android.Intents;
+import com.tzt.zxinglib.bean.ZxingConfig;
+import com.tzt.zxinglib.common.Constant;
 
 public class MainActivity extends AppCompatActivity {
     private TextView tvResult;
@@ -53,6 +54,15 @@ public class MainActivity extends AppCompatActivity {
     private void startCapture() {
         Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
         intent.setAction(Intents.Scan.ACTION);
+        ZxingConfig config = new ZxingConfig();
+        intent.putExtra(Constant.INTENT_ZXING_CONFIG, config);
+        config.setPlayBeep(true);//是否播放扫描声音 默认为true
+        config.setShake(true);//是否震动  默认为true
+        config.setDecodeBarCode(true);//是否扫描条形码 默认为true
+        config.setReactColor(R.color.colorAccent);//设置扫描框四个角的颜色 默认为白色
+        config.setFrameLineColor(R.color.colorAccent);//设置扫描框边框颜色 默认无色
+        config.setScanLineColor(R.color.colorAccent);//设置扫描线的颜色 默认白色
+        config.setFullScreenScan(false);//是否全屏扫描  默认为true  设为false则只会在扫描框中扫描
         startActivityForResult(intent, 0);
     }
 
@@ -60,8 +70,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0 && resultCode == RESULT_OK) {
-            Bundle bundle = data.getExtras();
-            tvResult.setText(bundle.getString(Intents.Scan.RESULT));
+            if (data != null) {
+                tvResult.setText(data.getStringExtra(Constant.CODED_CONTENT));
+            }
         }
     }
 }
